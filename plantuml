@@ -3,7 +3,6 @@ left to right direction
 skinparam packageStyle rect
 actor Библиотекарь
 actor Читатель
-actor Владимир
 
 rectangle Library_Information_System {
   usecase "Найти книгу в каталоге" as UC1
@@ -15,7 +14,6 @@ rectangle Library_Information_System {
   usecase "Получить книгу" as UC7
   usecase "Добавить информацию в карточку читателя" as UC8
  
-  Владимир --> UC1
   Библиотекарь --> UC1
   Читатель --> UC1
   Читатель --> UC2
