@@ -1,0 +1,29 @@
+@startuml
+left to right direction
+skinparam packageStyle rect
+actor Библиотекарь
+actor Читатель
+actor Владимир
+
+rectangle Library_Information_System {
+  usecase "Найти книгу в каталоге" as UC1
+  usecase "Взять книгу" as UC2
+  usecase "Вернуть книгу" as UC3
+  usecase "Добавить книгу в фонд" as UC4
+  usecase "Удалить книгу из фонда" as UC5
+  usecase "Выдать книгу" as UC6
+  usecase "Получить книгу" as UC7
+  usecase "Добавить информацию в карточку читателя" as UC8
+ 
+  Владимир --> UC1
+  Библиотекарь --> UC1
+  Читатель --> UC1
+  Читатель --> UC2
+  Читатель --> UC3
+  Библиотекарь --> UC4
+  Библиотекарь --> UC5
+  Библиотекарь --> UC6
+  Библиотекарь --> UC7
+  Библиотекарь --> UC8
+}
+@enduml
