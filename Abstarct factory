@@ -1,0 +1,11 @@
+class RobotFactory:
+    def create_robot(self):
+        pass
+
+class SimpleRobotFactory(RobotFactory):
+    def create_robot(self):
+        return SimpleRobot()
+
+class AdvancedRobotFactory(RobotFactory):
+    def create_robot(self):
+        return AdvancedRobot()
