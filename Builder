@@ -1,0 +1,26 @@
+class RobotBuilder:
+    def __init__(self):
+        self.robot = Robot()
+
+    def build_basic_parts(self):
+        pass
+
+    def build_advanced_parts(self):
+        pass
+
+    def get_robot(self):
+        return self.robot
+
+class SimpleRobotBuilder(RobotBuilder):
+    def build_basic_parts(self):
+        print("Building basic parts for simple robot")
+
+    def build_advanced_parts(self):
+        pass
+
+class AdvancedRobotBuilder(RobotBuilder):
+    def build_basic_parts(self):
+        print("Building basic parts for advanced robot")
+
+    def build_advanced_parts(self):
+        print("Building advanced parts for advanced robot")
