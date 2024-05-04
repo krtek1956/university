@@ -1,0 +1,26 @@
+from abc import ABC, abstractmethod
+
+class AbstractClass(ABC):
+    
+    @abstractmethod
+    def step_one(self):
+        pass
+    
+    @abstractmethod
+    def step_two(self):
+        pass
+    
+    def template_method(self):
+        self.step_one()
+        self.step_two()
+
+class ConcreteClass(AbstractClass):
+    
+    def step_one(self):
+        print("Step one implementation")
+        
+    def step_two(self):
+        print("Step two implementation")
+
+concrete = ConcreteClass()
+concrete.template_method()
