@@ -1,0 +1,21 @@
+class RobotMediator:
+    def __init__(self):
+        self.robot = None
+
+    def set_robot(self, robot):
+        self.robot = robot
+
+    def send_command(self, command):
+        self.robot.execute_command(command)
+
+class Robot:
+    def execute_command(self, command):
+        pass
+
+class SimpleRobot(Robot):
+    def execute_command(self, command):
+        print(f"Simple robot executing command: {command}")
+
+class AdvancedRobot(Robot):
+    def execute_command(self, command):
+        print(f"Advanced robot executing command: {command}")
