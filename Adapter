@@ -1,0 +1,21 @@
+class RobotAdapter(Robot):
+    def __init__(self, robot):
+        self.robot = robot
+
+    def execute_command(self, command):
+        print("Adapting command for advanced robot")
+        self.robot.execute_command(command)
+
+factory = AdvancedRobotFactory()
+robot = factory.create_robot()
+
+mediator = RobotMediator()
+mediator.set_robot(robot)
+mediator.send_command("Move")
+
+builder = AdvancedRobotBuilder()
+builder.build_basic_parts()
+builder.build_advanced_parts()
+
+adapter = RobotAdapter(SimpleRobot())
+adapter.execute_command("Jump")
