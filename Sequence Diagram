@@ -1,3 +1,30 @@
 @startuml
+@startuml
+title Библиотечная информационная система
 
+actor User
+participant "Библиотечная информационная система" as System
+participant "Каталог книг" as Catalog
+
+User -> System: Поиск книги
+System -> Catalog: Запрос на поиск
+Catalog --> System: Ответ с результатами поиска
+System -> User: Отображение результатов
+
+User -> System: Запрос выдачи книги
+System -> Catalog: Учет выдачи книги
+System --> User: Подтверждение выдачи
+
+User -> System: Запрос возврата книги
+System -> Catalog: Учет возврата книги
+System --> User: Подтверждение возврата
+
+User -> System: Запрос добавления книги
+System -> Catalog: Добавление книги в фонд
+System --> User: Подтверждение добавления
+
+User -> System: Запрос списания книги
+System -> Catalog: Списание книги из фонда
+System --> User: Подтверждение списания
+@enduml
 @enduml
