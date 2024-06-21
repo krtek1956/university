@@ -1,19 +1,87 @@
-class MyIterator:
-    def __init__(self, limit):
-        self.limit = limit
-        self.current = 0
+#include <iostream>
+#include <string>
+#include <vector>
 
-    def __iter__(self):
-        return self
+// Класс для представления книги
+class Book {
+private:
+    std::string title;
+    std::string author;
 
-    def __next__(self):
-        if self.current < self.limit:
-            result = self.current
-            self.current += 1
-            return result
-        else:
-            raise StopIteration
+public:
+    Book(const std::string& title, const std::string& author)
+        : title(title), author(author) {}
 
-iterator = MyIterator(5)
-for num in iterator:
-    print(num)
+    std::string getTitle() const {
+        return title;
+    }
+
+    std::string getAuthor() const {
+        return author;
+    }
+};
+
+// Интерфейс итератора
+template <typename T>
+class Iterator {
+public:
+    virtual ~Iterator() = default;
+    virtual bool hasNext() const = 0;
+    virtual T& next() = 0;
+};
+
+// Класс для представления коллекции книг
+class BookCollection {
+private:
+    std::vector<Book> books;
+
+public:
+    void addBook(const Book& book) {
+        books.push_back(book);
+    }
+
+    size_t getSize() const {
+        return books.size();
+    }
+
+    const Book& getBook(size_t index) const {
+        return books.at(index);
+    }
+
+    friend class BookCollectionIterator;
+};
+
+// Конкретный итератор для коллекции книг
+class BookCollectionIterator : public Iterator<Book> {
+private:
+    const BookCollection& collection;
+    size_t currentIndex;
+
+public:
+    BookCollectionIterator(const BookCollection& collection)
+        : collection(collection), currentIndex(0) {}
+
+    bool hasNext() const override {
+        return currentIndex < collection.getSize();
+    }
+
+    Book& next() override {
+        return const_cast<Book&>(collection.getBook(currentIndex++));
+    }
+};
+
+int main() {
+    BookCollection collection;
+    collection.addBook(Book("The Catcher in the Rye", "J.D. Salinger"));
+    collection.addBook(Book("To Kill a Mockingbird", "Harper Lee"));
+    collection.addBook(Book("1984", "George Orwell"));
+
+    BookCollectionIterator iterator(collection);
+
+    while (iterator.hasNext()) {
+        Book& book = iterator.next();
+        std::cout << "Title: " << book.getTitle() << ", Author: " << book.getAuthor() << std::endl;
+    }
+
+    return 0;
+}
