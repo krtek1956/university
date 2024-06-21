@@ -1,11 +1,101 @@
-class RobotFactory:
-    def create_robot(self):
-        pass
+#include <iostream>
+#include <memory>
+#include <string>
 
-class SimpleRobotFactory(RobotFactory):
-    def create_robot(self):
-        return SimpleRobot()
+// Абстрактный продукт - Кресло
+class Chair {
+public:
+    virtual ~Chair() = default;
+    virtual std::string getDescription() const = 0;
+};
 
-class AdvancedRobotFactory(RobotFactory):
-    def create_robot(self):
-        return AdvancedRobot()
+// Абстрактный продукт - Столик
+class CoffeeTable {
+public:
+    virtual ~CoffeeTable() = default;
+    virtual std::string getDescription() const = 0;
+};
+
+// Конкретный продукт - Викторианское Кресло
+class VictorianChair : public Chair {
+public:
+    std::string getDescription() const override {
+        return "Victorian Chair";
+    }
+};
+
+// Конкретный продукт - Модерн Кресло
+class ModernChair : public Chair {
+public:
+    std::string getDescription() const override {
+        return "Modern Chair";
+    }
+};
+
+// Конкретный продукт - Викторианский Столик
+class VictorianCoffeeTable : public CoffeeTable {
+public:
+    std::string getDescription() const override {
+        return "Victorian Coffee Table";
+    }
+};
+
+// Конкретный продукт - Модерн Столик
+class ModernCoffeeTable : public CoffeeTable {
+public:
+    std::string getDescription() const override {
+        return "Modern Coffee Table";
+    }
+};
+
+// Абстрактная фабрика
+class FurnitureFactory {
+public:
+    virtual ~FurnitureFactory() = default;
+    virtual std::unique_ptr<Chair> createChair() const = 0;
+    virtual std::unique_ptr<CoffeeTable> createCoffeeTable() const = 0;
+};
+
+// Конкретная фабрика для Викторианской мебели
+class VictorianFurnitureFactory : public FurnitureFactory {
+public:
+    std::unique_ptr<Chair> createChair() const override {
+        return std::unique_ptr<Chair>(new VictorianChair());
+    }
+
+    std::unique_ptr<CoffeeTable> createCoffeeTable() const override {
+        return std::unique_ptr<CoffeeTable>(new VictorianCoffeeTable());
+    }
+};
+
+// Конкретная фабрика для Модерн мебели
+class ModernFurnitureFactory : public FurnitureFactory {
+public:
+    std::unique_ptr<Chair> createChair() const override {
+        return std::unique_ptr<Chair>(new ModernChair());
+    }
+
+    std::unique_ptr<CoffeeTable> createCoffeeTable() const override {
+        return std::unique_ptr<CoffeeTable>(new ModernCoffeeTable());
+    }
+};
+
+void clientCode(const FurnitureFactory& factory) {
+    auto chair = factory.createChair();
+    auto coffeeTable = factory.createCoffeeTable();
+    std::cout << chair->getDescription() << std::endl;
+    std::cout << coffeeTable->getDescription() << std::endl;
+}
+
+int main() {
+    VictorianFurnitureFactory victorianFactory;
+    ModernFurnitureFactory modernFactory;
+
+    std::cout << "Victorian Furniture:" << std::endl;
+    clientCode(victorianFactory);
+
+    std::cout << "Modern Furniture:" << std::endl;
+    clientCode(modernFactory);
+
+    return 0;
+}
