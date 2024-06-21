@@ -1,0 +1,128 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+// Интерфейс посетителя
+class Book;
+class Magazine;
+
+class Visitor {
+public:
+    virtual ~Visitor() = default;
+    virtual void visit(Book& book) = 0;
+    virtual void visit(Magazine& magazine) = 0;
+};
+
+// Интерфейс элемента
+class Element {
+public:
+    virtual ~Element() = default;
+    virtual void accept(Visitor& visitor) = 0;
+};
+
+// Конкретный элемент - книга
+class Book : public Element {
+private:
+    std::string title;
+    std::string author;
+
+public:
+    Book(const std::string& title, const std::string& author)
+        : title(title), author(author) {}
+
+    std::string getTitle() const {
+        return title;
+    }
+
+    std::string getAuthor() const {
+        return author;
+    }
+
+    void accept(Visitor& visitor) override {
+        visitor.visit(*this);
+    }
+};
+
+// Конкретный элемент - журнал
+class Magazine : public Element {
+private:
+    std::string title;
+    int issueNumber;
+
+public:
+    Magazine(const std::string& title, int issueNumber)
+        : title(title), issueNumber(issueNumber) {}
+
+    std::string getTitle() const {
+        return title;
+    }
+
+    int getIssueNumber() const {
+        return issueNumber;
+    }
+
+    void accept(Visitor& visitor) override {
+        visitor.visit(*this);
+    }
+};
+
+// Конкретный посетитель - печать информации
+class PrintVisitor : public Visitor {
+public:
+    void visit(Book& book) override {
+        std::cout << "Book: " << book.getTitle() << ", Author: " << book.getAuthor() << std::endl;
+    }
+
+    void visit(Magazine& magazine) override {
+        std::cout << "Magazine: " << magazine.getTitle() << ", Issue Number: " << magazine.getIssueNumber() << std::endl;
+    }
+};
+
+// Конкретный посетитель - подсчет количества элементов
+class CountVisitor : public Visitor {
+private:
+    int bookCount = 0;
+    int magazineCount = 0;
+
+public:
+    void visit(Book& book) override {
+        ++bookCount;
+    }
+
+    void visit(Magazine& magazine) override {
+        ++magazineCount;
+    }
+
+    int getBookCount() const {
+        return bookCount;
+    }
+
+    int getMagazineCount() const {
+        return magazineCount;
+    }
+};
+
+int main() {
+    std::vector<Element*> library;
+    library.push_back(new Book("The Catcher in the Rye", "J.D. Salinger"));
+    library.push_back(new Book("To Kill a Mockingbird", "Harper Lee"));
+    library.push_back(new Magazine("National Geographic", 202));
+    library.push_back(new Magazine("TIME", 303));
+
+    PrintVisitor printVisitor;
+    CountVisitor countVisitor;
+
+    for (Element* element : library) {
+        element->accept(printVisitor);
+        element->accept(countVisitor);
+    }
+
+    std::cout << "Number of books: " << countVisitor.getBookCount() << std::endl;
+    std::cout << "Number of magazines: " << countVisitor.getMagazineCount() << std::endl;
+
+    for (Element* element : library) {
+        delete element;
+    }
+
+    return 0;
+}
