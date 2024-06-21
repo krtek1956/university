@@ -1,0 +1,73 @@
+#include <iostream>
+#include <memory>
+#include <unordered_map>
+#include <string>
+#include <typeindex>
+
+// Интерфейс каталога
+class ICatalog {
+public:
+    virtual ~ICatalog() = default;
+    virtual void listBooks() = 0;
+};
+
+// Реализация каталога
+class Catalog : public ICatalog {
+public:
+    void listBooks() override {
+        std::cout << "Listing all books in the catalog" << std::endl;
+    }
+};
+
+// Интерфейс библиотекаря
+class ILibrarian {
+public:
+    virtual ~ILibrarian() = default;
+    virtual void manageBooks() = 0;
+};
+
+// Реализация библиотекаря
+class Librarian : public ILibrarian {
+public:
+    explicit Librarian(std::shared_ptr<ICatalog> catalog) : catalog_(catalog) {}
+
+    void manageBooks() override {
+        std::cout << "Librarian is managing books" << std::endl;
+        catalog_->listBooks();
+    }
+
+private:
+    std::shared_ptr<ICatalog> catalog_;
+};
+
+// Контейнер DI
+class DIContainer {
+public:
+    template<typename T>
+    void registerService(std::shared_ptr<T> service) {
+        services_[std::type_index(typeid(T))] = service;
+    }
+
+    template<typename T>
+    std::shared_ptr<T> getService() {
+        return std::static_pointer_cast<T>(services_[std::type_index(typeid(T))]);
+    }
+
+private:
+    std::unordered_map<std::type_index, std::shared_ptr<void>> services_;
+};
+
+int main() {
+    // Создание контейнера DI
+    DIContainer container;
+
+    // Регистрация зависимостей
+    container.registerService<ICatalog>(std::make_shared<Catalog>());
+    container.registerService<ILibrarian>(std::make_shared<Librarian>(container.getService<ICatalog>()));
+
+    // Получение библиотекаря и выполнение работы
+    auto librarian = container.getService<ILibrarian>();
+    librarian->manageBooks();
+
+    return 0;
+}
