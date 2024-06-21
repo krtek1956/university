@@ -1,26 +1,87 @@
-from abc import ABC, abstractmethod
+#include <iostream>
 
-class AbstractClass(ABC):
-    
-    @abstractmethod
-    def step_one(self):
-        pass
-    
-    @abstractmethod
-    def step_two(self):
-        pass
-    
-    def template_method(self):
-        self.step_one()
-        self.step_two()
+// Базовый класс с шаблонным методом
+class DataMining {
+public:
+    // Шаблонный метод
+    void mine() {
+        openFile();
+        extractData();
+        parseData();
+        analyzeData();
+        closeFile();
+    }
 
-class ConcreteClass(AbstractClass):
-    
-    def step_one(self):
-        print("Step one implementation")
-        
-    def step_two(self):
-        print("Step two implementation")
+    // Шаги алгоритма
+    virtual void openFile() {
+        std::cout << "Opening file" << std::endl;
+    }
 
-concrete = ConcreteClass()
-concrete.template_method()
+    virtual void extractData() = 0; // Абстрактный метод
+    virtual void parseData() = 0;   // Абстрактный метод
+    virtual void analyzeData() {
+        std::cout << "Analyzing data" << std::endl;
+    }
+
+    virtual void closeFile() {
+        std::cout << "Closing file" << std::endl;
+    }
+
+    virtual ~DataMining() = default;
+};
+
+// Конкретный класс для CSV файлов
+class CSVMiner : public DataMining {
+public:
+    void extractData() override {
+        std::cout << "Extracting data from CSV file" << std::endl;
+    }
+
+    void parseData() override {
+        std::cout << "Parsing data from CSV file" << std::endl;
+    }
+};
+
+// Конкретный класс для JSON файлов
+class JSONMiner : public DataMining {
+public:
+    void extractData() override {
+        std::cout << "Extracting data from JSON file" << std::endl;
+    }
+
+    void parseData() override {
+        std::cout << "Parsing data from JSON file" << std::endl;
+    }
+};
+
+// Конкретный класс для XML файлов
+class XMLMiner : public DataMining {
+public:
+    void extractData() override {
+        std::cout << "Extracting data from XML file" << std::endl;
+    }
+
+    void parseData() override {
+        std::cout << "Parsing data from XML file" << std::endl;
+    }
+};
+
+int main() {
+    CSVMiner csvMiner;
+    JSONMiner jsonMiner;
+    XMLMiner xmlMiner;
+
+    std::cout << "CSV Miner:" << std::endl;
+    csvMiner.mine();
+    std::cout << std::endl;
+
+    std::cout << "JSON Miner:" << std::endl;
+    jsonMiner.mine();
+    std::cout << std::endl;
+
+    std::cout << "XML Miner:" << std::endl;
+    xmlMiner.mine();
+    std::cout << std::endl;
+
+    return 0;
+}
