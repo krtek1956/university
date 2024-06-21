@@ -1,0 +1,43 @@
+#include <iostream>
+#include <memory>
+#include <string>
+
+// Интерфейс сервиса
+class ILibraryService {
+public:
+    virtual ~ILibraryService() = default;
+    virtual void borrowBook(const std::string& bookTitle) = 0;
+};
+
+// Реализация сервиса
+class LibraryService : public ILibraryService {
+public:
+    void borrowBook(const std::string& bookTitle) override {
+        std::cout << "Borrowing book: " << bookTitle << std::endl;
+    }
+};
+
+// Заместитель сервиса
+class LibraryServiceProxy : public ILibraryService {
+public:
+    LibraryServiceProxy() : realService_(nullptr) {}
+
+    void borrowBook(const std::string& bookTitle) override {
+        if (!realService_) {
+            realService_ = std::make_shared<LibraryService>();
+        }
+        std::cout << "Logging: Borrowing book request for " << bookTitle << std::endl;
+        realService_->borrowBook(bookTitle);
+    }
+
+private:
+    std::shared_ptr<LibraryService> realService_;
+};
+
+// Клиентский код
+int main() {
+    std::shared_ptr<ILibraryService> libraryService = std::make_shared<LibraryServiceProxy>();
+    libraryService->borrowBook("The Great Gatsby");
+    libraryService->borrowBook("1984");
+    return 0;
+}
