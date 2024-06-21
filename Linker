@@ -1,0 +1,75 @@
+#include <iostream>
+#include <memory>
+#include <vector>
+#include <string>
+
+// Интерфейс компонента
+class ILibraryComponent {
+public:
+    virtual ~ILibraryComponent() = default;
+    virtual void display() const = 0;
+};
+
+// Лист - простой компонент
+class Book : public ILibraryComponent {
+public:
+    Book(const std::string& title) : title_(title) {}
+
+    void display() const override {
+        std::cout << "  Book: " << title_ << std::endl;
+    }
+
+private:
+    std::string title_;
+};
+
+// Контейнер - составной компонент
+class LibrarySection : public ILibraryComponent {
+public:
+    LibrarySection(const std::string& name) : name_(name) {}
+
+    void add(std::shared_ptr<ILibraryComponent> component) {
+        components_.push_back(component);
+    }
+
+    void display() const override {
+        std::cout << "Section: " << name_ << std::endl;
+        for (const auto& component : components_) {
+            component->display();
+        }
+    }
+
+private:
+    std::string name_;
+    std::vector<std::shared_ptr<ILibraryComponent>> components_;
+};
+
+// Клиентский код
+int main() {
+    // Создаем книги
+    std::shared_ptr<ILibraryComponent> book1 = std::make_shared<Book>("The Great Gatsby");
+    std::shared_ptr<ILibraryComponent> book2 = std::make_shared<Book>("1984");
+    std::shared_ptr<ILibraryComponent> book3 = std::make_shared<Book>("To Kill a Mockingbird");
+    std::shared_ptr<ILibraryComponent> book4 = std::make_shared<Book>("Moby Dick");
+    std::shared_ptr<ILibraryComponent> book5 = std::make_shared<Book>("Pride and Prejudice");
+
+    // Создаем разделы библиотеки
+    std::shared_ptr<LibrarySection> fictionSection = std::make_shared<LibrarySection>("Fiction");
+    fictionSection->add(book1);
+    fictionSection->add(book2);
+    fictionSection->add(book3);
+
+    std::shared_ptr<LibrarySection> classicSection = std::make_shared<LibrarySection>("Classics");
+    classicSection->add(book4);
+    classicSection->add(book5);
+
+    // Создаем основную библиотеку и добавляем в нее разделы
+    std::shared_ptr<LibrarySection> mainLibrary = std::make_shared<LibrarySection>("Main Library");
+    mainLibrary->add(fictionSection);
+    mainLibrary->add(classicSection);
+
+    // Отображаем всю структуру библиотеки
+    mainLibrary->display();
+
+    return 0;
+}
