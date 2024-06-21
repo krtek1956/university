@@ -1,0 +1,84 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+// Forward declaration of Mediator class
+class Mediator;
+
+// Abstract Colleague class
+class Colleague {
+public:
+    virtual ~Colleague() = default;
+    virtual void sendMessage(const std::string& message) = 0;
+    virtual void receiveMessage(const std::string& message) const = 0;
+    virtual void setMediator(Mediator* mediator) = 0;
+};
+
+// Abstract Mediator class
+class Mediator {
+public:
+    virtual ~Mediator() = default;
+    virtual void sendMessage(Colleague* colleague, const std::string& message) const = 0;
+};
+
+// Concrete Colleague class
+class ConcreteColleague : public Colleague {
+public:
+    ConcreteColleague(const std::string& name) : name_(name), mediator_(nullptr) {}
+
+    void sendMessage(const std::string& message) override {
+        if (mediator_) {
+            mediator_->sendMessage(this, message);
+        } else {
+            std::cout << "Mediator is not set for " << name_ << "\n";
+        }
+    }
+
+    void receiveMessage(const std::string& message) const override {
+        std::cout << name_ << " received: " << message << "\n";
+    }
+
+    void setMediator(Mediator* mediator) override {
+        mediator_ = mediator;
+    }
+
+private:
+    Mediator* mediator_;
+    std::string name_;
+};
+
+// Concrete Mediator class
+class ConcreteMediator : public Mediator {
+public:
+    void sendMessage(Colleague* colleague, const std::string& message) const override {
+        for (auto col : colleagues_) {
+            if (col != colleague) {
+                col->receiveMessage(message);
+            }
+        }
+    }
+
+    void addColleague(Colleague* colleague) {
+        colleagues_.push_back(colleague);
+        colleague->setMediator(this);
+    }
+
+private:
+    std::vector<Colleague*> colleagues_;
+};
+
+int main() {
+    ConcreteMediator mediator;
+
+    ConcreteColleague colleague1("Alice");
+    ConcreteColleague colleague2("Bob");
+    ConcreteColleague colleague3("Charlie");
+
+    mediator.addColleague(&colleague1);
+    mediator.addColleague(&colleague2);
+    mediator.addColleague(&colleague3);
+
+    colleague1.sendMessage("Hello, everyone!");
+
+    return 0;
+}
