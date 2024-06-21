@@ -1,26 +1,94 @@
-class RobotBuilder:
-    def __init__(self):
-        self.robot = Robot()
+#include <iostream>
+#include <memory>
+#include <string>
 
-    def build_basic_parts(self):
-        pass
+// Продукт - объект, который нужно построить
+class Product {
+public:
+    void setPartA(const std::string& partA) { partA_ = partA; }
+    void setPartB(const std::string& partB) { partB_ = partB; }
+    void setPartC(const std::string& partC) { partC_ = partC; }
 
-    def build_advanced_parts(self):
-        pass
+    void showProduct() const {
+        std::cout << "Product parts: " << partA_ << ", " << partB_ << ", " << partC_ << std::endl;
+    }
 
-    def get_robot(self):
-        return self.robot
+private:
+    std::string partA_;
+    std::string partB_;
+    std::string partC_;
+};
 
-class SimpleRobotBuilder(RobotBuilder):
-    def build_basic_parts(self):
-        print("Building basic parts for simple robot")
+// Интерфейс строителя
+class Builder {
+public:
+    virtual ~Builder() = default;
+    virtual void buildPartA() = 0;
+    virtual void buildPartB() = 0;
+    virtual void buildPartC() = 0;
+    virtual std::unique_ptr<Product> getProduct() = 0;
+};
 
-    def build_advanced_parts(self):
-        pass
+// Конкретный строитель для одного типа продукта
+class ConcreteBuilder1 : public Builder {
+public:
+    ConcreteBuilder1() { product_ = std::unique_ptr<Product>(new Product()); }
 
-class AdvancedRobotBuilder(RobotBuilder):
-    def build_basic_parts(self):
-        print("Building basic parts for advanced robot")
+    void buildPartA() override { product_->setPartA("Part A1"); }
+    void buildPartB() override { product_->setPartB("Part B1"); }
+    void buildPartC() override { product_->setPartC("Part C1"); }
 
-    def build_advanced_parts(self):
-        print("Building advanced parts for advanced robot")
+    std::unique_ptr<Product> getProduct() override { return std::move(product_); }
+
+private:
+    std::unique_ptr<Product> product_;
+};
+
+// Конкретный строитель для другого типа продукта
+class ConcreteBuilder2 : public Builder {
+public:
+    ConcreteBuilder2() { product_ = std::unique_ptr<Product>(new Product()); }
+
+    void buildPartA() override { product_->setPartA("Part A2"); }
+    void buildPartB() override { product_->setPartB("Part B2"); }
+    void buildPartC() override { product_->setPartC("Part C2"); }
+
+    std::unique_ptr<Product> getProduct() override { return std::move(product_); }
+
+private:
+    std::unique_ptr<Product> product_;
+};
+
+// Директор, управляющий процессом строительства
+class Director {
+public:
+    void setBuilder(Builder* builder) { builder_ = builder; }
+
+    void construct() {
+        builder_->buildPartA();
+        builder_->buildPartB();
+        builder_->buildPartC();
+    }
+
+private:
+    Builder* builder_;
+};
+
+// Клиентский код
+int main() {
+    Director director;
+
+    ConcreteBuilder1 builder1;
+    director.setBuilder(&builder1);
+    director.construct();
+    std::unique_ptr<Product> product1 = builder1.getProduct();
+    product1->showProduct();
+
+    ConcreteBuilder2 builder2;
+    director.setBuilder(&builder2);
+    director.construct();
+    std::unique_ptr<Product> product2 = builder2.getProduct();
+    product2->showProduct();
+
+    return 0;
+}
