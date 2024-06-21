@@ -1,0 +1,70 @@
+#include <iostream>
+#include <memory>
+
+// Общий интерфейс для всех стратегий
+class Strategy {
+public:
+    virtual ~Strategy() = default;
+    virtual void execute() const = 0;
+};
+
+// Конкретная стратегия A
+class ConcreteStrategyA : public Strategy {
+public:
+    void execute() const override {
+        std::cout << "Executing strategy A" << std::endl;
+    }
+};
+
+// Конкретная стратегия B
+class ConcreteStrategyB : public Strategy {
+public:
+    void execute() const override {
+        std::cout << "Executing strategy B" << std::endl;
+    }
+};
+
+// Конкретная стратегия C
+class ConcreteStrategyC : public Strategy {
+public:
+    void execute() const override {
+        std::cout << "Executing strategy C" << std::endl;
+    }
+};
+
+// Контекст, использующий стратегию
+class Context {
+private:
+    std::unique_ptr<Strategy> strategy;
+
+public:
+    void setStrategy(std::unique_ptr<Strategy> newStrategy) {
+        strategy = std::move(newStrategy);
+    }
+
+    void executeStrategy() const {
+        if (strategy) {
+            strategy->execute();
+        } else {
+            std::cout << "Strategy not set" << std::endl;
+        }
+    }
+};
+
+int main() {
+    Context context;
+
+    // Используем стратегию A
+    context.setStrategy(std::unique_ptr<Strategy>(new ConcreteStrategyA()));
+    context.executeStrategy();
+
+    // Сменяем стратегию на B
+    context.setStrategy(std::unique_ptr<Strategy>(new ConcreteStrategyB()));
+    context.executeStrategy();
+
+    // Сменяем стратегию на C
+    context.setStrategy(std::unique_ptr<Strategy>(new ConcreteStrategyC()));
+    context.executeStrategy();
+
+    return 0;
+}
