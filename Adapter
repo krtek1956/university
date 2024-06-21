@@ -1,21 +1,46 @@
-class RobotAdapter(Robot):
-    def __init__(self, robot):
-        self.robot = robot
+#include <iostream>
+#include <memory>
 
-    def execute_command(self, command):
-        print("Adapting command for advanced robot")
-        self.robot.execute_command(command)
+class Target {
+public:
+    virtual ~Target() = default;
+    virtual void request() const = 0;
+};
 
-factory = AdvancedRobotFactory()
-robot = factory.create_robot()
+class Adaptee {
+public:
+    void specificRequest() const {
+        std::cout << "Adaptee: Specific request\n";
+    }
+};
 
-mediator = RobotMediator()
-mediator.set_robot(robot)
-mediator.send_command("Move")
+class Adapter : public Target {
+public:
+    Adapter(std::unique_ptr<Adaptee> adaptee) : adaptee_(std::move(adaptee)) {}
 
-builder = AdvancedRobotBuilder()
-builder.build_basic_parts()
-builder.build_advanced_parts()
+    void request() const override {
+        std::cout << "Adapter: Translating request to specific request.\n";
+        adaptee_->specificRequest();
+    }
 
-adapter = RobotAdapter(SimpleRobot())
-adapter.execute_command("Jump")
+private:
+    std::unique_ptr<Adaptee> adaptee_;
+};
+
+class Client {
+public:
+    void process(const Target& target) {
+        std::cout << "Client: Processing target.\n";
+        target.request();
+    }
+};
+
+int main() {
+    std::unique_ptr<Adaptee> adaptee(new Adaptee());
+    std::unique_ptr<Target> adapter(new Adapter(std::move(adaptee)));
+
+    Client client;
+    client.process(*adapter);
+
+    return 0;
+}
